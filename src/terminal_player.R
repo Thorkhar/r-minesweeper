@@ -1,6 +1,6 @@
 terminal_player <- function(minefield) {
   is_alive <- TRUE
-  minefield$print_state()
+  print_state(minefield)
 
   while (is_alive) {
     print("Enter x of tile to probe")
@@ -14,8 +14,46 @@ terminal_player <- function(minefield) {
       is_alive <- FALSE
       break
     }
-    minefield$print_state()
+    print_state(minefield)
   }
 
-  minefield$print_bare()
+  print_bare(minefield)
+}
+
+print_state <- function(minefield) {
+  terminal_field <- ""
+  for (i in seq_len(minefield$height)) {
+    for (j in seq_len(minefield$width)) {
+      tile <- minefield$tiles[i, j][[1]]
+      if (tile$is_probed & tile$is_mine) {
+        terminal_field <- paste0(terminal_field, "|X")
+      } else if (tile$is_probed && tile$mines_near > 0) {
+        terminal_field <- paste0(terminal_field, "|", tile$mines_near)
+      } else if (tile$is_probed) {
+        terminal_field <- paste0(terminal_field, "| ")
+      } else {
+        terminal_field <- paste0(terminal_field, "|#")
+      }
+    }
+    terminal_field <- paste0(terminal_field, "|\n")
+  }
+
+  cat(terminal_field)
+}
+
+print_bare <- function(minefield) {
+  terminal_field <- ""
+  for (i in seq_len(minefield$height)) {
+    for (j in seq_len(minefield$width)) {
+      tile <- minefield$tiles[i, j][[1]]
+      if (tile$is_mine) {
+        terminal_field <- paste0(terminal_field, "|X")
+      } else {
+        terminal_field <- paste0(terminal_field, "| ")
+      }
+    }
+    terminal_field <- paste0(terminal_field, "|\n")
+  }
+
+  cat(terminal_field)
 }
