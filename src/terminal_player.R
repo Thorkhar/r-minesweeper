@@ -3,17 +3,27 @@ terminal_player <- function(minefield) {
   print_state(minefield)
 
   while (is_alive) {
-    print("Enter x of tile to probe")
+    print("Do you want to probe (1) or flag(2)?")
+    action <- readline() |> as.numeric()
+    print("Enter x of target tile")
     x <- readline() |> as.numeric()
-    print("Enter y of tile to probe")
+    print("Enter y of target tile")
     y <- readline() |> as.numeric()
 
-    probed_tile <- minefield$probe_tile(x, y)
-    if (probed_tile == -1) {
-      print("BOOM")
-      is_alive <- FALSE
-      break
+    if (action == 1) {
+      probed_tile <- minefield$probe_tile(x, y)
+      if (probed_tile == -1) {
+        print("BOOM")
+        is_alive <- FALSE
+        break
+      }
+    } else if (action == 2) {
+      flagged_tile <- minefield$flag_tile(x, y)
+    } else {
+      print("Invalid action")
+      next
     }
+
     print_state(minefield)
   }
 
@@ -27,6 +37,8 @@ print_state <- function(minefield) {
       tile <- minefield$tiles[i, j][[1]]
       if (tile$is_probed & tile$is_mine) {
         terminal_field <- paste0(terminal_field, "|X")
+      } else if (tile$is_flagged) {
+        terminal_field <- paste0(terminal_field, "|F")
       } else if (tile$is_probed && tile$mines_near > 0) {
         terminal_field <- paste0(terminal_field, "|", tile$mines_near)
       } else if (tile$is_probed) {
