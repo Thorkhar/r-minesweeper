@@ -21,7 +21,8 @@ Tile <- R6Class(
     flag = function() {
       private$.is_flagged <- !private$.is_flagged
       return(NULL)
-    }
+    },
+    mines_near = NULL
   ),
   private = list(
     .x = NULL,
