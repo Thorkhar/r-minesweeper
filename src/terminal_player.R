@@ -1,6 +1,6 @@
 terminal_player <- function(minefield) {
   is_alive <- TRUE
-  minefield$print()
+  minefield$print_state()
 
   while (is_alive) {
     print("Enter x of tile to probe")
@@ -12,8 +12,9 @@ terminal_player <- function(minefield) {
     if (probed_tile == -1) {
       print("BOOM")
       is_alive <- FALSE
+      break
     }
-    minefield$print()
+    minefield$print_state()
   }
 
   minefield$print_bare()

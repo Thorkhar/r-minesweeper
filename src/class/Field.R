@@ -8,6 +8,7 @@ Field <- R6Class(
       private$.height <- height
       private$.area <- width * height
       private$.tiles <- self$generate_field()
+      self$calculate_near_mines()
     },
     generate_field = function() {
       tiles <- sapply(
@@ -24,7 +25,30 @@ Field <- R6Class(
 
       return(tiles)
     },
-    print = function() {
+    calculate_near_mines = function() {
+      for (i in seq_len(private$.height)) {
+        for (j in seq_len(private$.width)) {
+          mines_near <- 0
+          lookup_tiles <- list(
+            c(i + 1, j),
+            c(i - 1, j),
+            c(i, j + 1),
+            c(i, j - 1),
+            c(i - 1, j - 1),
+            c(i + 1, j + 1),
+            c(i - 1, j + 1),
+            c(i + 1, j - 1)
+          )
+          for (crds in lookup_tiles) {
+            if (crds[1] < 1 || crds[2] < 1 || crds[1] > private$.width || crds[2] > private$.height) next
+            tile <- private$.tiles[crds[1], crds[2]][[1]]
+            mines_near <- mines_near + tile$is_mine
+          }
+          private$.tiles[i, j][[1]]$mines_near <- mines_near
+        }
+      }
+    },
+    print_state = function() {
       terminal_field <- ""
       for (i in seq_len(private$.height)) {
         for (j in seq_len(private$.width)) {
@@ -32,7 +56,7 @@ Field <- R6Class(
           if (tile$is_probed & tile$is_mine) {
             terminal_field <- paste0(terminal_field, "|X")
           } else if (tile$is_probed) {
-            terminal_field <- paste0(terminal_field, "| ")
+            terminal_field <- paste0(terminal_field, "|", tile$mines_near)
           } else {
             terminal_field <- paste0(terminal_field, "|#")
           }
@@ -50,7 +74,7 @@ Field <- R6Class(
           if (tile$is_mine) {
             terminal_field <- paste0(terminal_field, "|X")
           } else {
-            terminal_field <- paste0(terminal_field, "| ")
+            terminal_field <- paste0(terminal_field, "|", tile$mines_near)
           }
         }
         terminal_field <- paste0(terminal_field, "|\n")

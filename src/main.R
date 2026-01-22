@@ -9,4 +9,4 @@ source("src/terminal_player.R")
 
 minefield <- Field$new(width = field_width, height = field_height)
 
-# terminal_player(minefield)
+terminal_player(minefield)
