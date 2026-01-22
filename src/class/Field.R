@@ -6,7 +6,6 @@ Field <- R6Class(
     initialize = function(width, height) {
       private$.width <- width
       private$.height <- height
-      private$.area <- width * height
       private$.tiles <- self$generate_field()
       self$calculate_near_mines()
     },
@@ -26,25 +25,23 @@ Field <- R6Class(
       return(tiles)
     },
     calculate_near_mines = function() {
-      for (i in seq_len(private$.height)) {
-        for (j in seq_len(private$.width)) {
+      for (y in seq_len(private$.height)) {
+        for (x in seq_len(private$.width)) {
           mines_near <- 0
-          lookup_tiles <- list(
-            c(i + 1, j),
-            c(i - 1, j),
-            c(i, j + 1),
-            c(i, j - 1),
-            c(i - 1, j - 1),
-            c(i + 1, j + 1),
-            c(i - 1, j + 1),
-            c(i + 1, j - 1)
-          )
-          for (crds in lookup_tiles) {
-            if (crds[1] < 1 || crds[2] < 1 || crds[1] > private$.width || crds[2] > private$.height) next
-            tile <- private$.tiles[crds[1], crds[2]][[1]]
-            mines_near <- mines_near + tile$is_mine
+          offsets <- expand.grid(dx = -1:1, dy = -1:1) |>
+            mutate(dx = dx + x, dy = dy + y) |>
+            filter(
+              !(dx == x & dy == y),
+              between(dx, 1, private$.width),
+              between(dy, 1, private$.height)
+            )
+
+          for (idx in seq_len(nrow(offsets))) {
+            if (private$.tiles[offsets$dx[idx], offsets$dy[idx]][[1]]$is_mine) {
+              mines_near <- mines_near + 1
+            }
           }
-          private$.tiles[i, j][[1]]$mines_near <- mines_near
+          private$.tiles[x, y][[1]]$mines_near <- mines_near
         }
       }
     },
@@ -58,7 +55,6 @@ Field <- R6Class(
   private = list(
     .width = NULL,
     .height = NULL,
-    .area = NULL,
     .tiles = NULL
   ),
   active = list(
