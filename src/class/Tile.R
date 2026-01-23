@@ -20,11 +20,11 @@ Tile <- R6Class(
     },
     flag = function() {
       if (private$.is_probed) {
-        return(NULL)
+        return(private$.is_flagged)
       }
 
       private$.is_flagged <- !private$.is_flagged
-      return(NULL)
+      return(private$.is_flagged)
     },
     mines_near = NULL
   ),
