@@ -26,7 +26,8 @@ server <- function(input, output) {
         linetype = 1
       ) +
       geom_text(aes(label = display_label), color = "black", size = 3) +
-      coord_fixed()
+      coord_fixed() +
+      theme(legend.position = "none")
   })
 
   observeEvent(input$field_click, {
@@ -35,9 +36,13 @@ server <- function(input, output) {
     x_click <- round(input$field_click$x)
     y_click <- round(input$field_click$y)
 
-    mf$probe_tile(x_click, y_click)
+    probe_res <- mf$probe_tile(x_click, y_click)
 
-    minefield(mf$clone())
+    if (probe_res == -1) {
+      minefield(Field$new(width = 10, height = 10))
+    } else {
+      minefield(mf$clone())
+    }
   })
 
   observeEvent(input$field_dblclick, {
