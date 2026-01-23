@@ -7,19 +7,15 @@ Tile <- R6Class(
       private$.is_mine <- is_mine
     },
     probe = function() {
-      if (private$.is_flagged) {
+      if (private$.is_flagged || private$.is_probed) {
         return(0)
       }
 
-      if (!private$.is_probed) {
-        private$.is_probed <- TRUE
-        if (private$.is_mine) {
-          return(-1)
-        } else {
-          return(1)
-        }
+      private$.is_probed <- TRUE
+      if (private$.is_mine) {
+        return(-1)
       } else {
-        return(0)
+        return(1)
       }
     },
     flag = function() {
