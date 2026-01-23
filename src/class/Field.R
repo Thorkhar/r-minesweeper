@@ -46,10 +46,34 @@ Field <- R6Class(
       }
     },
     probe_tile = function(x, y) {
-      return(private$.tiles[x, y][[1]]$probe())
+      probe_res <- private$.tiles[x, y][[1]]$probe()
+      if (probe_res == 1 && private$.tiles[x, y][[1]]$mines_near == 0) {
+        self$probe_spread(x, y)
+      }
+      return(probe_res)
     },
     flag_tile = function(x, y) {
       return(private$.tiles[x, y][[1]]$flag())
+    },
+    probe_spread = function(origin_x, origin_y) {
+      neighbours <- expand.grid(dx = -1:1, dy = -1:1) |>
+        mutate(dx = dx + origin_x, dy = dy + origin_y) |>
+        filter(
+          !(dx == origin_x & dy == origin_y),
+          (dx == origin_x | dy == origin_y),
+          between(dx, 1, private$.width),
+          between(dy, 1, private$.height)
+        )
+
+      for (idx in seq_len(nrow(neighbours))) {
+        neighbour <- neighbours[idx, ]
+        neighbour_tile <- private$.tiles[neighbour$dx, neighbour$dy][[1]]
+        if (neighbour_tile$mines_near == 0 &&
+          !neighbour_tile$is_probed &&
+          !neighbour_tile$is_mine) {
+          self$probe_tile(neighbour_tile$x, neighbour_tile$y)
+        }
+      }
     }
   ),
   private = list(

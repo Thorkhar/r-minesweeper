@@ -7,7 +7,8 @@ source("src/class/Field.R")
 source("src/lib.R")
 
 ui <- basicPage(
-  plotOutput("field", click = "field_click", dblclick = "field_dblclick")
+  plotOutput("field", click = "field_click", dblclick = "field_dblclick"),
+  verbatimTextOutput("info")
 )
 
 server <- function(input, output) {
@@ -30,6 +31,15 @@ server <- function(input, output) {
       theme(legend.position = "none")
   })
 
+  output$info <- renderText({
+    mf <- minefield()
+    mf_df <- convert_field_to_df(mf$tiles)
+    paste0(
+      "Mines in game: ", sum(mf_df$is_mine), "\n",
+      "Flags placed: ", sum(mf_df$is_flagged)
+    )
+  })
+
   observeEvent(input$field_click, {
     mf <- minefield()
 
@@ -39,6 +49,7 @@ server <- function(input, output) {
     probe_res <- mf$probe_tile(x_click, y_click)
 
     if (probe_res == -1) {
+      print("Oops that was a mine :( Restarting game")
       minefield(Field$new(width = 10, height = 10))
     } else {
       minefield(mf$clone())
