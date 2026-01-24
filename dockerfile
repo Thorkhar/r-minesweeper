@@ -5,7 +5,7 @@ RUN apt-get update -qq && apt-get install -y \
   libssl-dev \
   libcurl4-gnutls-dev
 
-RUN R -e "install.packages('shiny', 'R6', 'dplyr', 'jsonlite', 'ggplot2')"
+RUN R -e "install.packages(c('shiny', 'R6', 'dplyr', 'jsonlite', 'ggplot2'))"
 
 COPY / /
 
