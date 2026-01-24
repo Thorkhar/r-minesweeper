@@ -3,6 +3,7 @@ library(ggplot2)
 library(R6)
 library(dplyr)
 
+cfg <- jsonlite::fromJSON("settings.json")
 source("src/class/Field.R")
 
 ui <- basicPage(
@@ -12,7 +13,7 @@ ui <- basicPage(
 
 server <- function(input, output) {
   minefield <- reactiveVal(
-    Field$new(width = 10, height = 10)
+    Field$new(width = cfg$field_width, height = cfg$field_height)
   )
 
   output$field <- renderPlot({
@@ -57,7 +58,7 @@ server <- function(input, output) {
 
     if (probe_res == -1) {
       print("Oops that was a mine :( Restarting game")
-      minefield(Field$new(width = 10, height = 10))
+      minefield(Field$new(width = cfg$field_width, height = cfg$field_height))
     } else {
       minefield(mf$clone())
     }

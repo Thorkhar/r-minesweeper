@@ -1,12 +1,11 @@
 library(dplyr)
 library(R6)
 
-field_width <- 10
-field_height <- 10
+cfg <- jsonlite::fromJSON("settings.json")
 
 source("src/class/Field.R")
 source("src/terminal_player.R")
 
-minefield <- Field$new(width = field_width, height = field_height)
+minefield <- Field$new(width = cfg$field_width, height = cfg$field_height)
 
-# terminal_player(minefield)
+terminal_player(minefield)

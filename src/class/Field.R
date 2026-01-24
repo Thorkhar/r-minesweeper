@@ -16,7 +16,11 @@ Field <- R6Class(
           return(
             sapply(
               seq_len(private$.width),
-              function(j) Tile$new(x = j, y = i, is_mine = rbinom(1, 1, 0.1))
+              function(j) {
+                Tile$new(
+                  x = j, y = i, is_mine = rbinom(1, 1, cfg$mine_density)
+                )
+              }
             )
           )
         }
