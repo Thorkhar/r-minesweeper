@@ -1,5 +1,5 @@
 {
-  "field_width": 10,
-  "field_height": 10,
-  "mine_density": 0.1
+  "field_width": 30,
+  "field_height": 30,
+  "mine_density": 0.15
 }
