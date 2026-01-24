@@ -72,8 +72,7 @@ Field <- R6Class(
       for (idx in seq_len(nrow(neighbours))) {
         neighbour <- neighbours[idx, ]
         neighbour_tile <- private$.tiles[neighbour$dx, neighbour$dy][[1]]
-        if (neighbour_tile$mines_near == 0 &&
-          !neighbour_tile$is_probed &&
+        if (!neighbour_tile$is_probed &&
           !neighbour_tile$is_mine) {
           self$probe_tile(neighbour_tile$x, neighbour_tile$y)
         }
