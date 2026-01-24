@@ -3,6 +3,7 @@ library(ggplot2)
 library(R6)
 library(dplyr)
 
+options(shiny.port = 8100)
 cfg <- jsonlite::fromJSON("settings.json")
 source("src/class/Field.R")
 
