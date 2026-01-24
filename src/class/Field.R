@@ -74,6 +74,21 @@ Field <- R6Class(
           self$probe_tile(neighbour_tile$x, neighbour_tile$y)
         }
       }
+    },
+    as_df = function() {
+      df_representation <- expand.grid(
+        x = seq_len(ncol(private$.tiles)),
+        y = seq_len(nrow(private$.tiles))
+      ) |>
+        rowwise() |>
+        mutate(
+          is_probed = private$.tiles[x, y][[1]]$is_probed,
+          is_flagged = private$.tiles[x, y][[1]]$is_flagged,
+          is_mine = private$.tiles[x, y][[1]]$is_mine,
+          mines_near = private$.tiles[x, y][[1]]$mines_near
+        )
+
+      return(df_representation)
     }
   ),
   private = list(

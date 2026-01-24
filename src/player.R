@@ -4,7 +4,6 @@ library(R6)
 library(dplyr)
 
 source("src/class/Field.R")
-source("src/lib.R")
 
 ui <- basicPage(
   plotOutput("field", click = "field_click", dblclick = "field_dblclick"),
@@ -18,7 +17,15 @@ server <- function(input, output) {
 
   output$field <- renderPlot({
     mf <- minefield()
-    mf_df <- convert_field_to_df(mf$tiles)
+    mf_df <- mf$as_df() |>
+      mutate(
+        display_label = case_when(
+          is_flagged ~ "F",
+          is_probed & is_mine ~ "X",
+          is_probed & mines_near > 0 ~ as.character(mines_near),
+          TRUE ~ ""
+        )
+      )
 
     ggplot(mf_df, aes(x = x, y = y, fill = as.factor(is_probed))) +
       geom_tile(
@@ -33,7 +40,7 @@ server <- function(input, output) {
 
   output$info <- renderText({
     mf <- minefield()
-    mf_df <- convert_field_to_df(mf$tiles)
+    mf_df <- mf$as_df()
     paste0(
       "Mines in game: ", sum(mf_df$is_mine), "\n",
       "Flags placed: ", sum(mf_df$is_flagged)
