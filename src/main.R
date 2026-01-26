@@ -18,6 +18,8 @@ server <- function(input, output) {
   )
 
   output$field <- renderPlot({
+    #' Render minefield on screen using ggplot2 anf the DataFrame representation
+    #' of the Field class.
     mf <- minefield()
     mf_df <- mf$as_df() |>
       mutate(
@@ -41,6 +43,8 @@ server <- function(input, output) {
   })
 
   output$info <- renderText({
+    #' Show number of mines in game and the number of flagged tiles in a message
+    #' box on screen.
     mf <- minefield()
     mf_df <- mf$as_df()
     paste0(
@@ -50,6 +54,8 @@ server <- function(input, output) {
   })
 
   observeEvent(input$field_click, {
+    #' Probe a tile if the user double clicks it.
+    #' Restart the game if a mine is probed and print a message to console.
     mf <- minefield()
 
     x_click <- round(input$field_click$x)
@@ -66,6 +72,7 @@ server <- function(input, output) {
   })
 
   observeEvent(input$field_dblclick, {
+    #' Flag a tile if the user double clicks it
     mf <- minefield()
 
     x_click <- round(input$field_dblclick$x)
