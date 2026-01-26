@@ -7,6 +7,12 @@ Tile <- R6Class(
       private$.is_mine <- is_mine
     },
     probe = function() {
+      #' Probes the tile to check whether it's a mine or not
+      #'
+      #' If the tile is flag or already probed, return 0 immediately.
+      #' Else return 1 if probe is successful and tile is not a mine, or return
+      #' -1 if the tile is a mine.
+      #' @return Integer probe result
       if (private$.is_flagged || private$.is_probed) {
         return(0)
       }
@@ -19,6 +25,10 @@ Tile <- R6Class(
       }
     },
     flag = function() {
+      #' Flags a tile to prevent probing it
+      #'
+      #' If a tile is already probed, it cannot be flagged.
+      #' @return Boolean indicating the tile's current flag state
       if (private$.is_probed) {
         return(private$.is_flagged)
       }
