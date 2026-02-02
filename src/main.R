@@ -116,12 +116,11 @@ server <- function(input, output) {
 
   observeEvent(input$field_dblclick, {
     #' Flag a tile if the user double clicks it
-    #'
+    mf <- minefield()
+
     if (!mf$is_alive) {
       return(NULL)
     }
-
-    mf <- minefield()
 
     x_click <- round(input$field_dblclick$x)
     y_click <- round(input$field_dblclick$y)
