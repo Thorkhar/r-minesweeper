@@ -1,4 +1,4 @@
-source("src/class/Tile.R")
+source("./src/class/Tile.R")
 
 Field <- R6Class(
   "Field",
