@@ -1,4 +1,4 @@
-source("src/class/Tile.R")
+source("./src/class/Tile.R")
 
 Field <- R6Class(
   "Field",
@@ -71,6 +71,8 @@ Field <- R6Class(
       probe_res <- private$.tiles[x, y][[1]]$probe()
       if (probe_res == 1 && private$.tiles[x, y][[1]]$mines_near == 0) {
         self$probe_spread(x, y)
+      } else if (probe_res == -1) {
+        private$.is_alive <- FALSE
       }
       return(probe_res)
     },
@@ -136,12 +138,14 @@ Field <- R6Class(
   private = list(
     .width = NULL,
     .height = NULL,
-    .tiles = NULL
+    .tiles = NULL,
+    .is_alive = TRUE
   ),
   active = list(
     width = function() private$.width,
     height = function() private$.height,
     area = function() private$.area,
-    tiles = function() private$.tiles
+    tiles = function() private$.tiles,
+    is_alive = function() private$.is_alive
   )
 )
