@@ -9,8 +9,7 @@ options(shiny.port = 8100, shiny.host = "0.0.0.0")
 cfg <- jsonlite::fromJSON("./settings.json")
 source("./src/assets.R")
 source("./src/class/Field.R")
-
-assets <- load_assets()
+sprites <- load_sprites()
 
 ui <- basicPage(
   plotOutput("field", click = "field_click", dblclick = "field_dblclick"),
@@ -53,19 +52,19 @@ server <- function(input, output) {
       tile <- mf_df[idx, ]
 
       if (tile$is_flagged) {
-        sprite <- assets$TileFlag
+        sprite <- sprites$TileFlag$grob
       } else if (
         tile$is_probed &&
           tile$mines_near > 0 &&
           !tile$is_mine
       ) {
-        sprite <- assets[[paste0("Tile", tile$mines_near)]]
+        sprite <- sprites[[paste0("Tile", tile$mines_near)]]$grob
       } else if (tile$is_probed && !tile$is_mine) {
-        sprite <- assets$TileEmpty
+        sprite <- sprites$TileEmpty$grob
       } else if (tile$is_mine && !mf$is_alive) {
-        sprite <- assets$TileMine
+        sprite <- sprites$TileMine$grob
       } else {
-        sprite <- assets$TileUnknown
+        sprite <- sprites$TileUnknown$grob
       }
 
       minefield_plot <- minefield_plot +

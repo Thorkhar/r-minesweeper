@@ -1,13 +1,10 @@
-load_assets <- function() {
+source("./src/class/Sprite.R")
+
+load_sprites <- function() {
   asset_filenames <- list.files("./assets", pattern = ".png")
   assets <- lapply(
-    asset_filenames,
-    function(filename) {
-      return(
-        readPNG(paste0("./assets/", filename)) |>
-          rasterGrob(interpolate = TRUE)
-      )
-    }
+    paste0("./assets/", asset_filenames),
+    function(x) Sprite$new(x)
   )
   names(assets) <- gsub(".png", "", asset_filenames)
 
