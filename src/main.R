@@ -24,7 +24,8 @@ server <- function(input, output) {
 
   output$field <- renderPlot({
     #' Render minefield on screen using ggplot2 and the DataFrame representation
-    #' of the Field class.
+    #' of the Field class. Rendering both bare grid and sprites, removing
+    #' sprites will make the game faster.
     mf <- minefield()
     mf_df <- mf$as_df() |>
       mutate(
@@ -49,29 +50,31 @@ server <- function(input, output) {
       theme(legend.position = "none")
 
     for (idx in seq_len(nrow(mf_df))) {
-      tile_row <- mf_df[idx, ]
-      if (tile_row$is_flagged) {
+      tile <- mf_df[idx, ]
+
+      if (tile$is_flagged) {
         sprite <- assets$TileFlag
-      } else if (tile_row$is_probed &&
-        tile_row$mines_near > 0 &&
-        !tile_row$is_mine) {
-        sprite <- assets[[paste0("Tile", mf_df$mines_near[idx])]]
-      } else if (tile_row$is_probed && !tile_row$is_mine) {
+      } else if (
+        tile$is_probed &&
+          tile$mines_near > 0 &&
+          !tile$is_mine
+      ) {
+        sprite <- assets[[paste0("Tile", tile$mines_near)]]
+      } else if (tile$is_probed && !tile$is_mine) {
         sprite <- assets$TileEmpty
+      } else if (tile$is_mine && !mf$is_alive) {
+        sprite <- assets$TileMine
       } else {
         sprite <- assets$TileUnknown
       }
 
-      tile_x <- tile_row$x
-      tile_y <- tile_row$y
-
       minefield_plot <- minefield_plot +
         annotation_custom(
           sprite,
-          xmin = tile_x - .5,
-          xmax = tile_x + .5,
-          ymin = tile_y - .5,
-          ymax = tile_y + .5
+          xmin = tile$x - .5,
+          xmax = tile$x + .5,
+          ymin = tile$y - .5,
+          ymax = tile$y + .5
         )
     }
 
@@ -94,21 +97,31 @@ server <- function(input, output) {
     #' Restart the game if a mine is probed and print a message to console.
     mf <- minefield()
 
+    if (!mf$is_alive) {
+      print("Restarting game ...")
+      minefield(Field$new(width = cfg$field_width, height = cfg$field_height))
+      return(NULL)
+    }
+
     x_click <- round(input$field_click$x)
     y_click <- round(input$field_click$y)
 
     probe_res <- mf$probe_tile(x_click, y_click)
 
     if (probe_res == -1) {
-      print("Oops that was a mine :( Restarting game")
-      minefield(Field$new(width = cfg$field_width, height = cfg$field_height))
-    } else {
-      minefield(mf$clone())
+      print("Oops that was a mine :( Click anywhere to restart the game")
     }
+
+    minefield(mf$clone())
   })
 
   observeEvent(input$field_dblclick, {
     #' Flag a tile if the user double clicks it
+    #'
+    if (!mf$is_alive) {
+      return(NULL)
+    }
+
     mf <- minefield()
 
     x_click <- round(input$field_dblclick$x)

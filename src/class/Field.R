@@ -71,6 +71,8 @@ Field <- R6Class(
       probe_res <- private$.tiles[x, y][[1]]$probe()
       if (probe_res == 1 && private$.tiles[x, y][[1]]$mines_near == 0) {
         self$probe_spread(x, y)
+      } else if (probe_res == -1) {
+        self$is_alive <- FALSE
       }
       return(probe_res)
     },
@@ -131,7 +133,8 @@ Field <- R6Class(
         )
 
       return(df_representation)
-    }
+    },
+    is_alive = TRUE
   ),
   private = list(
     .width = NULL,
